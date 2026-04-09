@@ -41,6 +41,7 @@
             <artifactId>cucumber-java</artifactId>
             <version>7.15.0</version>
         </dependency>
+
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
@@ -70,15 +71,16 @@
             <scope>test</scope>
         </dependency>
 
+
         <!-- WebDriverManager para gerenciar drivers automaticamente -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.6.2</version>
+            <version>6.1.0</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
-
+        </dependencies>
+    <!-- BUILD -->
     <build>
         <plugins>
             <!-- Plugin para executar a aplicação -->
