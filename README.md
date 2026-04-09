@@ -1,6 +1,6 @@
-# estudo-automacao-porto
+# implementação de testes Automatizados com IA
 
-Projeto de estudo de automação de testes web com foco em BDD, validando fluxos reais no site da documentação do Playwright.
+Projeto de estudo de automação de testes web com foco em BDD, validando fluxos reais no site da documentação do Playwright. By GLAUCIO
 
 ---
 
@@ -30,6 +30,12 @@ Este projeto automatiza cenários end-to-end para validar comportamento de inter
 - 🧾 SLF4J Simple (logs)
 - 🧭 IntelliJ IDEA + Codex (IDE principal)
 - 🌍 Google Chrome (navegador dos testes)
+
+### 🤖 IA Utilizadas
+
+- `CODEX (gpt-5.3-codex)`
+- `JetBrains AI Assistant`
+- `Junie`
 
 ### 🤖 Agentes de IA instalados e configurados
 
@@ -215,3 +221,17 @@ git commit -m "fix: resolve conflitos de merge"
 - `DEPENDENCIAS.md`
 - `GUIA_STEP_DEFINITIONS.md`
 
+---
+
+## 🔗 Atalhos para arquivos `.md`
+
+- [AGENTS.md](AGENTS.md)
+- [ANALISE_PASSOSDETESTE.md](ANALISE_PASSOSDETESTE.md)
+- [CENARIOSdeTESTES.md](CENARIOSdeTESTES.md)
+- [DEPENDENCIAS.md](DEPENDENCIAS.md)
+- [GUIA_STEP_DEFINITIONS.md](GUIA_STEP_DEFINITIONS.md)
+- [LIMPAR_CACHE_VIA_TERMINAL.md](LIMPAR_CACHE_VIA_TERMINAL.md)
+- [README.md](README.md)
+- [README_VALIDACAO.md](README_VALIDACAO.md)
+- [RELATORIO_TESTES_FINAL.md](RELATORIO_TESTES_FINAL.md)
+- [SOLUCAO_ERROS_IDE.md](SOLUCAO_ERROS_IDE.md)
