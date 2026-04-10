@@ -23,3 +23,22 @@ Funcionalidade: Explorar o site Playwright
     Quando [NAV] clico em "Get started"
     E [MENU] escolho a linguagem "Java"
     Então [DOCS] o código deve mostrar "Playwright.create()"
+
+  Cenário: 06 - Validar link para o GitHub
+    Quando [FOOTER] clico no ícone do "GitHub"
+    Então [NAV] a nova aba deve conter "microsoft/playwright"
+
+  Cenário: 07 - Validar acesso à referência da API
+    Quando [NAV] clico em "API"
+    Então [DOCS] o cabeçalho principal deve ser "Playwright Library"
+
+  Cenário: 08 - Verificar menu de Comunidade
+    Dado [HOME] que acesso o site "https://playwright.dev"
+    Quando [NAV] clico em "Community"
+    Então [DOCS] devo ver o link para "Stack Overflow"
+
+
+  Cenário: 10 - Pesquisa sem resultados
+    Dado [HOME] que acesso o site "https://playwright.dev"
+    Quando [BUSCA] pesquiso por "TextoInexistente123"
+    Então [RESULT] devo ver a mensagem "No results for"

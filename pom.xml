@@ -12,10 +12,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
-        <!-- Selenium WebDriver para automação de testes web -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -28,14 +28,12 @@
             <version>2.0.12</version>
         </dependency>
 
-        <!-- Microsoft Playwright para automação de navegadores modernos -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>1.42.0</version>
         </dependency>
 
-        <!-- Cucumber para testes BDD -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
@@ -49,7 +47,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit 5 para testes unitários -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -63,7 +60,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit 4 (para compatibilidade com Cucumber) -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -71,35 +67,34 @@
             <scope>test</scope>
         </dependency>
 
-
-        <!-- WebDriverManager para gerenciar drivers automaticamente -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>6.1.0</version>
             <scope>test</scope>
         </dependency>
-        </dependencies>
-    <!-- BUILD -->
+    </dependencies>
+
     <build>
         <plugins>
-            <!-- Plugin para executar a aplicação -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
                 <configuration>
                     <mainClass>org.example.Main</mainClass>
                 </configuration>
             </plugin>
 
-            <!-- Plugin Maven Surefire para executar testes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
                 <configuration>
                     <includes>
                         <include>**/Runner.java</include>
                     </includes>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -110,17 +105,16 @@
                 </dependencies>
             </plugin>
 
-            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
-

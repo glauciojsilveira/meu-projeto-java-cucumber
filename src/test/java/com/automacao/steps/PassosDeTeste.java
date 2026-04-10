@@ -6,13 +6,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.junit.Assert;
 import java.time.Duration;
-import org.openqa.selenium.Keys;
+import java.util.List;
 
 public class PassosDeTeste {
 
-    // Pegamos o driver que o Hooks criou
     WebDriver driver = Hooks.driver;
-    // Criamos um "garçom" (Wait) que espera até 15 segundos por elementos específicos
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
     @Dado("[HOME] que acesso o site {string}")
@@ -41,64 +39,96 @@ public class PassosDeTeste {
     public void pesquisa(String termo) {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.DocSearch-Button"))).click();
         WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("docsearch-input")));
-
+        input.clear();
         input.sendKeys(termo);
-
-        // Usa JavaScript para forçar o evento de "Enter" caso o Selenium falhe
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));", input);
+        // Não usamos Keys.ENTER aqui para o Cenário 10 não quebrar
     }
 
     @Então("[RESULT] o primeiro item deve ser {string}")
     public void validaResultado(String esperado) {
-        // Em vez de localizar e validar em linhas separadas, usamos o wait para aguardar o texto específico
-        // Isso garante que o Selenium espere o "Autocomplete" terminar a filtragem
-        boolean confirmacao = wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                By.cssSelector(".DocSearch-Hit-title"), esperado));
+        // CORREÇÃO CENÁRIO 03: Espera o texto aparecer dentro do seletor específico
+        By seletorResultado = By.cssSelector(".DocSearch-Hit-title");
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(seletorResultado, esperado));
 
-        Assert.assertTrue("O resultado esperado '" + esperado + "' não apareceu a tempo.", confirmacao);
+        WebElement primeiroItem = driver.findElement(seletorResultado);
+        Assert.assertTrue("Resultado não encontrado! Encontrado: " + primeiroItem.getText(),
+                primeiroItem.getText().toLowerCase().contains(esperado.toLowerCase()));
     }
-
 
     @Quando("[TEMA] clico para alternar o tema")
     public void alternaTema() {
-        // Seleciona o botão de sol/lua usando atributo data-tooltip ou role
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[aria-label*='dark']"))).click();
     }
 
     @Então("[TEMA] verifico se o fundo mudou")
     public void verificaFundo() {
         String tema = driver.findElement(By.tagName("html")).getAttribute("data-theme");
-        Assert.assertNotNull("O atributo de tema não foi encontrado", tema);
+        Assert.assertNotNull(tema);
     }
 
     @Quando("[MENU] escolho a linguagem {string}")
     public void escolheLinguagem(String lang) {
         try {
-            // 1. Tenta clicar no dropdown (espera até estar clicável)
-            WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".navbar__item.dropdown")));
-            dropdown.click();
-        } catch (StaleElementReferenceException e) {
-            // Se o elemento ficou "velho", procuramos ele novamente do zero
-            WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".navbar__item.dropdown")));
-            dropdown.click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".navbar__item.dropdown"))).click();
+            String xpath = String.format("//a[contains(@class, 'dropdown__link') and text()='%s']", lang);
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
+        } catch (Exception e) {
+            // Re-tentativa em caso de erro de clique/stale
+            driver.navigate().refresh();
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".navbar__item.dropdown"))).click();
+            String xpath = String.format("//a[contains(@class, 'dropdown__link') and text()='%s']", lang);
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
         }
-
-        // 2. Agora clicamos na opção (Java, Python, etc.)
-        // O seletor abaixo busca o link que tem EXATAMENTE o texto da linguagem
-        String xpathOpcao = String.format("//a[contains(@class, 'dropdown__link') and text()='%s']", lang);
-        WebElement opcao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpathOpcao)));
-
-        // Usamos o JavaScript que você gostou (Opção 2) para garantir o clique na opção
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].click();", opcao);
     }
-
 
     @Então("[DOCS] o código deve mostrar {string}")
     public void o_codigo_deve_mostrar(String codigo) {
-        // Verificar se o código contém o snippet esperado
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("pre code")));
-        Assert.assertTrue("Código não contém o snippet esperado", element.getText().contains(codigo));
+        Assert.assertTrue(element.getText().contains(codigo));
+    }
+
+    @Quando("[FOOTER] clico no ícone do {string}")
+    public void clicoIconeRedeSocial(String rede) {
+        String seletor = String.format("a[aria-label*='%s']", rede);
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(seletor))).click();
+    }
+
+    @Então("[NAV] a nova aba deve conter {string}")
+    public void validaNovaAba(String termo) {
+        Object[] janelas = driver.getWindowHandles().toArray();
+        driver.switchTo().window(janelas[janelas.length - 1].toString());
+        wait.until(ExpectedConditions.urlContains(termo));
+        Assert.assertTrue(driver.getCurrentUrl().contains(termo));
+        driver.close();
+        driver.switchTo().window(janelas[0].toString());
+    }
+
+    @Então("[DOCS] o cabeçalho principal deve ser {string}")
+    public void validaCabecalho(String esperado) {
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("h1"), esperado));
+        Assert.assertEquals(esperado, driver.findElement(By.tagName("h1")).getText());
+    }
+
+    @Então("[DOCS] devo ver o link para {string}")
+    public void verificaLinkComunidade(String linkTexto) {
+        By link = By.linkText(linkTexto);
+        wait.until(ExpectedConditions.presenceOfElementLocated(link));
+        Assert.assertTrue(driver.findElement(link).isDisplayed());
+    }
+
+    @Quando("[NAV] clico no seletor de idiomas")
+    public void abreIdiomas() {
+        // Seletor mais preciso para o botão de idiomas
+        List<WebElement> dropdowns = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".navbar__item.dropdown")));
+        dropdowns.get(dropdowns.size() - 1).click();
+    }
+
+
+
+    @Então("[RESULT] devo ver a mensagem {string}")
+    public void validaSemResultado(String mensagem) {
+        // CORREÇÃO CENÁRIO 10: Seletor específico da mensagem de erro do Algolia
+        WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".DocSearch-NoResults p, .DocSearch-Title")));
+        Assert.assertTrue("Mensagem esperada não encontrada", container.getText().contains(mensagem));
     }
 }
