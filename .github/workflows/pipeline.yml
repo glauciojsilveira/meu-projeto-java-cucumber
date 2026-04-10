@@ -1,14 +1,17 @@
-name: CI de Testes Automatizados
+nname: CI de Testes Automatizados
 
 on:
   push:
     branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
   workflow_dispatch:
+  # Executa todos os dias às 12h do Brasil (15h UTC)
+  schedule:
+    - cron: '0 15 * * *'
 
-# --- SOLUÇÃO PARA O ALERTA DO NODE 20/24 ---
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-# ----------------------------------------
 
 jobs:
   testes-qa:
@@ -37,3 +40,24 @@ jobs:
             target/cucumber-reports.html
             target/cucumber.json
           retention-days: 5
+
+      - name: Enviar Notificação por E-mail
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Relatório de Testes Playwright: ${{ job.status }}"
+          to: ${{ secrets.MAIL_RECIPIENT }}
+          from: "GitHub Actions QA"
+          body: |
+            Olá Glaucio,
+            
+            Os testes automatizados foram finalizados.
+            Status: ${{ job.status }}
+            Repositório: ${{ github.repository }}
+            Workflow: ${{ github.workflow }}
+            
+            Acesse os detalhes e baixe os artefatos aqui: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
